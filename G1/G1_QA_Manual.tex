@@ -2,8 +2,9 @@
 %
 \usepackage{amsmath,amssymb}
 \usepackage{bm}
-\usepackage{graphicx}
+\usepackage[dvipdfmx]{graphicx}
 \usepackage{ascmac}
+\usepackage{color}
 %
 \setlength{\textwidth}{\fullwidth}
 \setlength{\textheight}{39\baselineskip}
@@ -14,14 +15,114 @@
 %\newcommand{\divergence}{\mathrm{div}\,}  %ダイバージェンス
 %\newcommand{\grad}{\mathrm{grad}\,}  %グラディエント
 %\newcommand{\rot}{\mathrm{rot}\,}  %ローテーション
+\newcommand{\noindot}{\noindent{$\cdot$}} %箇条書きに使えるように
+\newcommand{\rev}[2]{ver.{#1}: #2}
 %
-\pagestyle{myheadings}
-\markright{Patient QA Manual for G1}
+%\pagestyle{myheadings}
+%\markright{Patient QA Manual for G1}
+
+\makeatletter
+\def\thickhrulefill{\leavevmode \leaders \hrule height 1pt\hfill \kern \z@}
+\renewcommand{\maketitle}{\begin{titlepage}%
+    \let\footnotesize\small
+    \let\footnoterule\relax
+    \parindent \z@
+    \reset@font
+    \null\vfil
+    \begin{flushleft}
+      \huge \@title
+    \end{flushleft}
+    \par
+    \hrule height 4pt
+    \par
+    \begin{flushright}
+      \LARGE \@author \par
+    \end{flushright}
+    \vskip 20\p@
+    \begin{flushright}
+    	--- 更新履歴 --- \par
+	\rev{0.0.1}{プロトタイプバージョン、図絵なし}\par
+    \end{flushright}
+    \vskip 60\p@
+    \vfil\null
+    \begin{flushright}
+        {\small \@date}%
+    \end{flushright}
+  \end{titlepage}%
+  \setcounter{footnote}{0}%
+}
+\makeatother
+
+\title{Patient QA Manual for G1}
+\author{名古屋陽子線治療センター}
+\date{\today}
+
 \begin{document}
 %
+\maketitle
 %
 \section{まず始めに}
-とりあえずタフウォーターをFXから持ってこよう。
+\noindot ~QAシートの測定点の編集を行う。測定点は本来自動で計算されて出力されているが、G1 の場合、PDD が平坦ではなく Distal 側にピークを持つなどの分布になることがある。このようなケースでは自動で設定される測定点が適当でないことがある。そのため、患者QAを開始する前に QA シートから測定点を確認して、必要ならば編集を行う。編集の方針は以下の図を参考にすること。編集を終えたら QA シートを印刷する。\par
+\noindot 患者 QA を行う際には以下のものを準備する。
+	\begin{description}
+		\item[PTW OCTAVIOUS]\mbox{}\\
+		二次元検出器で、照射室のケースに入っている。LAN を介してデータのやり取りをするので、差し忘れに注意。
+		\item[タフウォーター]\mbox{}\\
+		普段は FX 照射室に置いてあるので、取ってくる。
+		\item[3D Pinpoint チェンバー]\mbox{}\\
+		制御室の奥にあるデシケーター内に保管してある。各照射室の物が用意されているので、「G1」と入ったものを取ってくる。
+	\end{description}%
+加えて、チェンバーの電位計は予め電源を投入しておく。これは電位計のゼロ調整（Zeroing）が電源投入から５分以上経過しないと実行出来ない為である。
+
+\section{セットアップ：二次元検出器}
+\noindot ペンダントからレーザーをONにする。カウチにタフウォーターの治具を置いて、治具に付けてある線（縦、横）とレーザーの位置を合わせる。このとき、ある程度合わせておいてタフウォーターを載せた後、微調整を行う。これはタフウォーターの重みによってカウチがたわむためである。\par
+\noindot アプリケーターがある場合には、先にアプリケーターを設置してからカウチの移動やタフウォーターの設置を行う。\par
+\noindot ~QAシートに従ってタフウォーターを並べていく。検出器に近い側から1, 2, 3 ... となるように並べていく。\par
+\noindot 定規を用いて QA シートに記載されている実厚とタフウォーターの厚さが一致しているか、確認する。ここで測定深の値はタフウォーター表面から二次元検出器の検出器部分までの距離に相当するので、こちらも同時に確認するとよい。\par
+\noindot 温度計を設置する。\par
+\noindot ~MOSAIQ から QA プランを流す。プランを流す手順は以下の通り。
+	\begin{enumerate}
+		\item プランを選ぶ。
+		\item Field を選ぶ。
+		\item 全系 PC 側で Confirm を押し、上書き。
+		\item プランを選択して、セットアップの確認画面に行く。
+	\end{enumerate}%
+\noindot レンジシフタ、コリメーターのバーコードをバーコードリーダーで読み取り、MOSAIQ 上の赤字部分を消す。\par
+\noindot 照射を行った後同じプランをもう一度流す場合は、照射終了後に表示される変更確認データのポップアップで「いいえ」をクリックする。切り替わった画面では照射したプランが表示されていないので、左クリックもしくは Ctrl + r で「更新」を行い、プランを表示させてから同じものを選択する。
 %
+\section{測定：二次元検出器}
+\noindot ~Verisoft を立ち上げる。\par
+\noindot 四分割された画面のうち、左上にある画面（Data A）で VQA フォルダ内にある Volume.dcm を開く。容量が大きいので読み込みに時間がかかるが辛抱強く待つ。読み込み中にマウスをクリックするなどすると「応答なし」と表示されるが、フリーズしているわけではない。\par
+\noindot 読み込み後、次のようなダイアログが表示される。
+	\begin{enumerate}
+		\item dcm ファイルの情報をどう扱うか。
+		\item flip and rotation
+	\end{enumerate}%
+\noindot 左下の画面（Data B）で測定を行う。測定ボタンを押すと、温度と気圧を入力する画面が表示される。温度はカメラの映像から値を読み取り、気圧は制御室内にある気圧計の値を{\bf{\textcolor{red}{そのまま}}}入力する。\par
+\noindot 測定画面に移ったら最初にゼロ調整（Zeroing）を行う。場合によってはポップアップが表示されてゼロ調整を促すメッセージが出てくるが、その場合は「はい」を押してゼロ調整を実行する。\par
+\noindot 測定を開始する時は Start (F5)、終了する時は Stop (F6) を押した後に Apply をクリックする。\par
+
+\section{解析：二次元検出器}
+\noindot 取得したデータを保存する。左下画面 Data B から保存。Ctrl + Shift + s でもいける。\par
+\noindot 左上画面 Data A において左部分にある Calibration を選び、中心点（TG = 0, LR = 0）で calibration を行う\footnote{線量が入っていれば、たとえ線量勾配の急な領域であっても必ず中心点で calibration を行うこと。}。線量が全く入っていない場合（Distal の測定時には見られることがある）は線量分布の中心付近で calibration を行う。\par
+\noindot ~calibration 後、右上画面に $\gamma$-index 解析の結果、右下画面に$\gamma$-index解析の分布が表示される。2mm-2\%および3mm-3\%の結果を QA シートに記入する。$\gamma$-index 解析のトレランスは以下の通り。
+	\begin{itemize}
+		\item 2mm-2\% の場合：80\%以上
+		\item 3mm-3\% の場合：95\%以上
+	\end{itemize}%
+トレランスを下回った場合には slice depth の 1mm 前後で解析を行ってみる。それでも上手くいかない場合は物理に連絡、相談すること。\par
+\noindot 測定、解析した結果は PDF にして保存する。Ctrl + p でプリント。プリンタ選択画面で PDF を出力する Bullzip... を選ぶ。PDF は該当のフォルダに測定点（iso, distal, prox）の名前を付けて保存する。\par
+\noindot 全てのプランについて3点（iso, distal, prox）の測定を行い、終了後、絶対線量測定に移る。
 %
+\section{測定と解析：絶対線量検証}
+\noindot ~3D-Pinpoint チェンバーと HV ケーブルを繋いで、タフウォーターを並べる。設置後、制御室にある電位計からゼロ調整を行う。ゼロ調整には１分強かかるので待つ。QA シートに温度と気圧を記入しておく。気圧を記入する際は単位が kPa となっているので注意が必要。\footnote{制御室内にある気圧計は hPa 単位で表示されている。}\par
+\noindot コリメーターを使うプランの場合は線量漏れをフィルムで確認する必要がある。フィルムは図のように貼り、漏れがあった場合には変色したフィルムだけを取り外して表面（色のついている部分）に患者ID、日付、照射したプラン（G170I1M0 など）の情報を記入する。記入したフィルムは物理に渡す。\par
+\noindot ~MOSAIQ からプランを流して照射を行う。iso-center での絶対線量測定は測定のばらつきによる誤差を考慮して２回照射を行い、その平均値を測定線量として扱う。２回の差が 0.3\% を超えた場合には３回目を測定し、大きなずれがないことを確認する。\par
+\noindot \underline{絶対線量測定のトレランスは$\pm$2\%}となっている。このトレランス範囲から外れていた場合には、セットアップの確認、温度$\cdot$気圧の確認などを実施し、必要であれば再測定を行う。それでもトレランスを超えてしまう場合は物理に連絡、相談する。\par
+\noindot 絶対線量を測定した後は PDD 上にある測定点（主に distal の点）を測定する。測定した点が PDD の曲線から外れる場合があるが、物理に相談してみる。\par
+\noindot 全ての点を測定した後、QA シートに記入漏れがないことを確認してから印刷する。印刷したシートは物理に渡す。\par
+\noindot ~QA シートのファイルをローカルにコピーする。デスクトップ上にある「名古屋市」フォルダの下に Patient QA というフォルダがあるので、そこに部位毎にコピーする。コピーする際は VQA フォルダから患者のフォルダごとコピーした後に QA シートだけを残して volume.dcm などが収まっているフォルダを削除する。誤って VQA フォルダ上にあるデータを削除してしまわないよう、注意すること。
+%
+\section{プレ照射}
+\noindot ~\today 現在、G1 照射室ではプレ照射を行わないと治療時に照射することができない。そのため QA モードで、実際の治療プランを照射する必要がある。実施の手順は MOSAIQ の QA モードから治療プランを流し、アプリケーターやコリメーター、レンジシフタなどを取り付け、ガントリーを指定の角度に回転させた状態で照射を行えばよい。照射後、変更確認データの記録を促すポップアップが表示されるので、「はい」を選択する。さらに MOSAIQ 上の「診断と治療」メニューから照射を行ったプランを表示させて、メモの部分に用いたレンジシフタの ID を記す。例えばレンジシフタが 1mm の場合には「RS1」、レンジシフタなしの場合には「RS0」とする。
 \end{document}
