@@ -2,7 +2,7 @@
 %
 \usepackage{amsmath,amssymb}
 \usepackage{bm}
-\usepackage[dvipdfmx]{graphicx}
+\usepackage[dvipdfmx]{graphicx,color}
 \usepackage{ascmac}
 \usepackage{color}
 %
@@ -16,8 +16,9 @@
 %\newcommand{\grad}{\mathrm{grad}\,}  %グラディエント
 %\newcommand{\rot}{\mathrm{rot}\,}  %ローテーション
 \newcommand{\noindot}{\noindent{$\cdot$}} %箇条書きに使えるように
-\newcommand{\rev}[2]{ver.{#1}: #2}
+\newcommand{\rev}[2]{ver.{#1}: #2} %バージョン管理用にコメントを残せるように
 %
+
 %\pagestyle{myheadings}
 %\markright{Patient QA Manual for G1}
 
@@ -42,6 +43,7 @@
     \begin{flushright}
     	--- 更新履歴 --- \par
 	\rev{0.0.1}{プロトタイプバージョン、図絵なし}\par
+	\rev{0.0.2}{物理による確認、Appendix、一部図絵を追加}\par
     \end{flushright}
     \vskip 60\p@
     \vfil\null
@@ -66,14 +68,26 @@
 \noindot 患者 QA を行う際には以下のものを準備する。
 	\begin{description}
 		\item[PTW OCTAVIOUS]\mbox{}\\
-		二次元検出器で、照射室のケースに入っている。LAN を介してデータのやり取りをするので、差し忘れに注意。
+		二次元検出器で、照射室のケースに入っている（図\ref{fig:OCTAVIOUS}）。LAN を介してデータのやり取りをするので、差し忘れに注意。
 		\item[タフウォーター]\mbox{}\\
 		普段は FX 照射室に置いてあるので、取ってくる。
 		\item[3D Pinpoint チェンバー]\mbox{}\\
-		制御室の奥にあるデシケーター内に保管してある。各照射室の物が用意されているので、「G1」と入ったものを取ってくる。
+		図\ref{fig:3Dpinpoint}参照。制御室の奥にあるデシケーター内に保管してある。
 	\end{description}%
 加えて、チェンバーの電位計は予め電源を投入しておく。これは電位計のゼロ調整（Zeroing）が電源投入から５分以上経過しないと実行出来ない為である。
-
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=13.0cm]{./Figures/OCTAVIOUS.png}
+		\caption{二次元検出器：OCTAVIOUS}
+		\label{fig:OCTAVIOUS}
+	\end{figure}%
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=10.0cm]{./Figures/3Dpinpoint.png}
+		\caption{3D Pinpoint チェンバー}
+		\label{fig:3Dpinpoint}
+	\end{figure}%
+	
 \section{セットアップ：二次元検出器}
 \noindot ペンダントからレーザーをONにする。カウチにタフウォーターの治具を置いて、治具に付けてある線（縦、横）とレーザーの位置を合わせる。このとき、ある程度合わせておいてタフウォーターを載せた後、微調整を行う。これはタフウォーターの重みによってカウチがたわむためである。\par
 \noindot アプリケーターがある場合には、先にアプリケーターを設置してからカウチの移動やタフウォーターの設置を行う。\par
@@ -87,42 +101,145 @@
 		\item 全系 PC 側で Confirm を押し、上書き。
 		\item プランを選択して、セットアップの確認画面に行く。
 	\end{enumerate}%
-\noindot レンジシフタ、コリメーターのバーコードをバーコードリーダーで読み取り、MOSAIQ 上の赤字部分を消す。\par
+\noindot レンジシフタ、コリメーターのバーコードをバーコードリーダーで読み取り、MOSAIQ 上の赤字部分を消す。\footnote{プランを流した後にカウチを動かした場合などは 「上書き」で対処する。}\par
 \noindot 照射を行った後同じプランをもう一度流す場合は、照射終了後に表示される変更確認データのポップアップで「いいえ」をクリックする。切り替わった画面では照射したプランが表示されていないので、左クリックもしくは Ctrl + r で「更新」を行い、プランを表示させてから同じものを選択する。
 %
 \section{測定：二次元検出器}
-\noindot ~Verisoft を立ち上げる。\par
-\noindot 四分割された画面のうち、左上にある画面（Data A）で VQA フォルダ内にある Volume.dcm を開く。容量が大きいので読み込みに時間がかかるが辛抱強く待つ。読み込み中にマウスをクリックするなどすると「応答なし」と表示されるが、フリーズしているわけではない。\par
-\noindot 読み込み後、次のようなダイアログが表示される。
+\noindot ~Verisoft を立ち上げる（図\ref{fig:Verisoft_Desktop}）。\par
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=12.0cm]{./Figures/Verisoft_Desktop.png}
+		\caption{Verisoft}
+		\label{fig:Verisoft_Desktop}
+	\end{figure}%
+\noindot 四分割された画面のうち、左上にある画面（Data A）で VQA フォルダ内にある Volume.dcm を開く（図\ref{fig:Load_DCM}）。容量が大きいので読み込みに時間がかかるが辛抱強く待つ。読み込み中にマウスをクリックするなどすると「応答なし」と表示されるが、フリーズしているわけではない。\par
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=13.0cm]{./Figures/DataA_Load.png}
+		\caption{dcm ファイルの読み込み}
+		\label{fig:Load_DCM}
+	\end{figure}%
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=14.0cm]{./Figures/DCM_Popup.png}
+		\caption{dcmファイル読み込み中に表示されるポップアップウィンドウ}
+		\label{fig:DCM_Popup}
+	\end{figure}%
+\noindot 読み込み後、次のようなダイアログ（図\ref{fig:DCM_Popup}）が表示される。
 	\begin{enumerate}
 		\item dcm ファイルの情報をどう扱うか。
 		\item flip and rotation
 	\end{enumerate}%
-\noindot 左下の画面（Data B）で測定を行う。測定ボタンを押すと、温度と気圧を入力する画面が表示される。温度はカメラの映像から値を読み取り、気圧は制御室内にある気圧計の値を{\bf{\textcolor{red}{そのまま}}}入力する。\par
-\noindot 測定画面に移ったら最初にゼロ調整（Zeroing）を行う。場合によってはポップアップが表示されてゼロ調整を促すメッセージが出てくるが、その場合は「はい」を押してゼロ調整を実行する。\par
-\noindot 測定を開始する時は Start (F5)、終了する時は Stop (F6) を押した後に Apply をクリックする。\par
+\noindot 左下の画面（Data B）で測定を行う（図\ref{fig:DataB_Meas}）。測定ボタンを押すと、温度と気圧を入力する画面が表示される。温度はカメラの映像から値を読み取り、気圧は制御室内にある気圧計の値を{\bf{\textcolor{red}{そのまま}}}入力する。\par
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=14.0cm]{./Figures/DataB_Meas.png}
+		\caption{データ測定の際にパラメーター（温度、気圧）を入力する画面}
+		\label{fig:DataB_Meas}
+	\end{figure}%
+\noindot 測定画面に移ったら最初にゼロ調整（Zeroing）を行う（図\ref{fig:Verisoft_Zeroing}）。場合によってはポップアップが表示されてゼロ調整を促すメッセージが出てくるが、その場合は「はい」を押してゼロ調整を実行する。\par
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=13.0cm]{./Figures/Verisoft_Zeroing.png}
+		\caption{Verisoft のゼロ調整}
+		\label{fig:Verisoft_Zeroing}
+	\end{figure}%
+\noindot 測定を開始する時は Start (F5)、終了する時は Stop (F6) を押した後に Apply をクリックする（図\ref{fig:Verisoft_Measure_Start}）。\par
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=14.0cm]{./Figures/Verisoft_Measure_Start.png}
+		\caption{Verisoft の測定画面}
+		\label{fig:Verisoft_Measure_Start}
+	\end{figure}%
 
 \section{解析：二次元検出器}
-\noindot 取得したデータを保存する。左下画面 Data B から保存。Ctrl + Shift + s でもいける。\par
+\noindot 取得したデータを保存する。左下画面 Data B から保存。Ctrl + Shift + s でもいける。図\ref{fig:Verisoft_Analysis} 参照。\par
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=14.0cm]{./Figures/Verisoft_Analysis.png}
+		\caption{測定したデータの解析手順}
+		\label{fig:Verisoft_Analysis}
+	\end{figure}%
 \noindot 左上画面 Data A において左部分にある Calibration を選び、中心点（TG = 0, LR = 0）で calibration を行う\footnote{線量が入っていれば、たとえ線量勾配の急な領域であっても必ず中心点で calibration を行うこと。}。線量が全く入っていない場合（Distal の測定時には見られることがある）は線量分布の中心付近で calibration を行う。\par
 \noindot ~calibration 後、右上画面に $\gamma$-index 解析の結果、右下画面に$\gamma$-index解析の分布が表示される。2mm-2\%および3mm-3\%の結果を QA シートに記入する。$\gamma$-index 解析のトレランスは以下の通り。
 	\begin{itemize}
 		\item 2mm-2\% の場合：80\%以上
 		\item 3mm-3\% の場合：95\%以上
 	\end{itemize}%
-トレランスを下回った場合には slice depth の 1mm 前後で解析を行ってみる。それでも上手くいかない場合は物理に連絡、相談すること。\par
+トレランスを下回った場合には slice depth の 1mm 前後で解析を行ってみる。それでも上手くいかない場合は物理に連絡、相談すること。また測定した分布の中心線量を QA シートに記入する。\par
 \noindot 測定、解析した結果は PDF にして保存する。Ctrl + p でプリント。プリンタ選択画面で PDF を出力する Bullzip... を選ぶ。PDF は該当のフォルダに測定点（iso, distal, prox）の名前を付けて保存する。\par
 \noindot 全てのプランについて3点（iso, distal, prox）の測定を行い、終了後、絶対線量測定に移る。
 %
 \section{測定と解析：絶対線量検証}
 \noindot ~3D-Pinpoint チェンバーと HV ケーブルを繋いで、タフウォーターを並べる。設置後、制御室にある電位計からゼロ調整を行う。ゼロ調整には１分強かかるので待つ。QA シートに温度と気圧を記入しておく。気圧を記入する際は単位が kPa となっているので注意が必要。\footnote{制御室内にある気圧計は hPa 単位で表示されている。}\par
-\noindot コリメーターを使うプランの場合は線量漏れをフィルムで確認する必要がある。フィルムは図のように貼り、漏れがあった場合には変色したフィルムだけを取り外して表面（色のついている部分）に患者ID、日付、照射したプラン（G170I1M0 など）の情報を記入する。記入したフィルムは物理に渡す。\par
+\noindot コリメーターを使うプランの場合は線量漏れをフィルムで確認する必要がある。フィルムは図\ref{fig:LeakFilm}のように貼り、漏れがあった場合には変色したフィルムだけを取り外して表面（色のついている部分）に患者ID、日付、照射したプラン（G170I1M0 など）の情報を記入する。記入したフィルムは物理に渡す。\par
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=14.0cm]{./Figures/LeakFilm.png}
+		\caption{漏れ線量を測定する際のフィルム}
+		\label{fig:LeakFilm}
+	\end{figure}%
 \noindot ~MOSAIQ からプランを流して照射を行う。iso-center での絶対線量測定は測定のばらつきによる誤差を考慮して２回照射を行い、その平均値を測定線量として扱う。２回の差が 0.3\% を超えた場合には３回目を測定し、大きなずれがないことを確認する。\par
 \noindot \underline{絶対線量測定のトレランスは$\pm$2\%}となっている。このトレランス範囲から外れていた場合には、セットアップの確認、温度$\cdot$気圧の確認などを実施し、必要であれば再測定を行う。それでもトレランスを超えてしまう場合は物理に連絡、相談する。\par
 \noindot 絶対線量を測定した後は PDD 上にある測定点（主に distal の点）を測定する。測定した点が PDD の曲線から外れる場合があるが、物理に相談してみる。\par
 \noindot 全ての点を測定した後、QA シートに記入漏れがないことを確認してから印刷する。印刷したシートは物理に渡す。\par
-\noindot ~QA シートのファイルをローカルにコピーする。デスクトップ上にある「名古屋市」フォルダの下に Patient QA というフォルダがあるので、そこに部位毎にコピーする。コピーする際は VQA フォルダから患者のフォルダごとコピーした後に QA シートだけを残して volume.dcm などが収まっているフォルダを削除する。誤って VQA フォルダ上にあるデータを削除してしまわないよう、注意すること。
-%
+\noindot ~QA シートのファイルをローカルにコピーする。デスクトップ上にある「名古屋市」フォルダの下に Patient QA というフォルダがある（図\ref{fig:Nagoya_Desktop}）ので、そこに部位毎にコピーする。コピーする際は VQA フォルダから患者のフォルダごとコピーした後に QA シートだけを残して volume.dcm などが収まっているフォルダを削除する。誤って VQA フォルダ上にあるデータを削除してしまわないよう、注意すること。
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[clip, width=12.0cm]{./Figures/Nagoya_Desktop.png}
+		\caption{デスクトップ上にある名古屋市フォルダ}
+		\label{fig:Nagoya_Desktop}
+	\end{figure}%
+
 \section{プレ照射}
-\noindot ~\today 現在、G1 照射室ではプレ照射を行わないと治療時に照射することができない。そのため QA モードで、実際の治療プランを照射する必要がある。実施の手順は MOSAIQ の QA モードから治療プランを流し、アプリケーターやコリメーター、レンジシフタなどを取り付け、ガントリーを指定の角度に回転させた状態で照射を行えばよい。照射後、変更確認データの記録を促すポップアップが表示されるので、「はい」を選択する。さらに MOSAIQ 上の「診断と治療」メニューから照射を行ったプランを表示させて、メモの部分に用いたレンジシフタの ID を記す。例えばレンジシフタが 1mm の場合には「RS1」、レンジシフタなしの場合には「RS0」とする。
+\noindot ~\today 現在、G1 照射室ではプレ照射を行わないと治療時に照射することができない。そのため QA モードで、実際の治療プランを照射する必要がある。実施の手順は MOSAIQ の QA モードから治療プランを流し、アプリケーターやコリメーター、レンジシフタなどを取り付け、ガントリーを指定の角度に回転させた状態で照射を行えばよい。照射後、変更確認データの記録を促すポップアップが表示されるので、「はい」を選択する。さらに MOSAIQ 上の「診断と治療」メニューから照射を行ったプランを表示させて、メモの部分に用いたレンジシフタの ID を記す。例えばレンジシフタが 1mm の場合には「RS1」、レンジシフタなしの場合には「RS0」とする。併せてメモ欄にアプリケーターの ID を記す。例えばアプリケーター Type1 の場合には「Sn1」、アプリケーターなし の場合には「Sn0」とする。
+%
+\section{物理による確認}
+\noindot 患者 QA 終了後、QA シートのチェックを行う。チェック項目は以下の通り。
+	\begin{itemize}
+		\item 温度、気圧。特に気圧の単位が kPa になっているか、注意。
+		\item $\gamma$-index 解析の結果についてトレランスの範囲内に収まっているか。2mm-2\% では 80\% 以上、3mm-3\% では 95\% 以上となっているか。もしこれらのトレランスから外れている場合にはその原因について調査すること。
+		\item PDD と測定点が一致しているか確認する。一致していない場合には VQA の QA プランから $\pm$1mm の Profile(Transverse, Coronal)を取得し重ね書きしてみる。
+		\item 絶対線量測定の結果と VQA から出力される計算線量の差が$\pm$2\% 以内に収まっているか。
+		\item OCTAVIOUS で測定した線量と計算線量の差が$\pm$2\% 以内に収まっているか。
+		\item PSF の値が 0.98 $\sim$ 1.02 の範囲内にあるか。もしこの範囲に収まっていなかった場合には、VQA の QA プランから自分で PSF を計算して求める。それとシート上に記載された PSF を比較して妥当かどうかを検討する。
+		\item Information ファイルから Beam Dose とシートの投与線量の値が一致していることを確認する。
+		\item Information ファイルから Normalization point depth とシートの Depth の値が一致していることを確認する。
+		\item アプリケーター（コリメーターなし）を用いる場合には、アプリケーターの枠内にビームの範囲が収まっていること VQA プランから確認する。
+	\end{itemize}%
+\noindot 治療部位が頭頸部の場合は、上記に加えて下記の項目もチェックする。
+	\begin{itemize}
+		\item VQA プランから該当の治療 Field を選び、Total MU、Spot 数をシートの数値と照合させる。
+		\item CT-WER-Table $=$ toukeibu\_120\_550\_Toshiba\_LB となっているか確認する。頭頸部以外では taikanbu... となっている。
+		\item スポット配置がアプリケーターの外側まで広がっていないか確認する。VQA プランの meterset から display を選ぶと見ることができる。
+	\end{itemize}%
+\noindot その他、気になる点などがあったら QA シートにメモして医師の承認をもらう。
+%	
+\section{医師による承認後}
+\noindot 承認をもらったら、MOSAIQ の「診断と治療」から照射する MU 値の校正承認を行う。ここに入力した MU 値を治療で照射するので、シートの間違いがないように以下の項目をチェックした上で MU 値を確認する。
+	\begin{itemize}
+		\item 患者 ID
+		\item Approved Plan ID
+		\item Field 名
+		\item トレランス $=$ Proton G1 treatment
+		\item Max. Energy
+		\item Min. Energy
+		\item レンジシフタ
+		\item ガントリー角度
+	\end{itemize}%
+\noindot ~MU 値を確認後、Ctrl + o で校正承認を行う。
+%
+\newpage
+\appendix
+\section{ボーラス形状のテキストデータ出力}
+~\today 現在、ボーラス形状のテキストデータは出力されていない。そのため必要な場合は自分で作成しなければならない。ボーラス形状の出力には VQA の該当する Approved プランから出力したいフィールドの「Bolus」タグを選択して、ボーラスの断面図を表示させる。画面半分より上の辺りに深さの数値が記されたタイルが表示されているので、そのうちの一つを選択して Ctrl + a で全選択してから Ctrl + c でコピーする。コピーしたデータはアプリケーションのメモ帳を開いて貼付ける。
+%
+\section{PSF の求め方}
+~PSF の値が 0.98 $\sim$ 1.02 の範囲外の場合、VQA の QA プランから手計算で PSF の値を計算して確認する必要がある。具体的な手順は以下の通り。
+	\begin{itemize}
+		\item VQA から該当の QA プランを開く。
+		\item iso-center での計算線量（Gy）を表示させる為に calculated dose を選択する。
+		\item iso-center での計算線量を Number of fraction で割って、1 fraction あたりの線量にする。
+		\item PSF $=$ 投与線量/RBE/1 fraction あたりの計算線量（Gy/fr）を計算する。RBE $=$ 1.1、投与線量は QA シートに記載されている。
+	\end{itemize}%
 \end{document}
